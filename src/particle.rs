@@ -3,6 +3,7 @@ use rand::Rng;
 use std::cmp::Ordering;
 
 // represents a particle
+#[derive(Clone)]
 pub struct Particle<const DIMS: usize> {
     coordinates: [f64; DIMS],
     best: f64,
@@ -35,11 +36,11 @@ impl<const DIMS: usize> Particle<DIMS> {
         res
     }
 
-    pub fn apply_velocity<V>(&mut self, func: &V)
+    pub fn apply_velocity<V>(&mut self, best: &Self, func: &V)
     where
         V: VelocityFunction<DIMS>,
     {
-        let vel = func(self);
+        let vel = func(self, best);
 
         for i in 0..self.coordinates.len() {
             // gives performance gain by removing bounds check

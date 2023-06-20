@@ -3,7 +3,7 @@ use std::error::Error;
 
 // using it as a trait bound alias
 // particle should contain all the needed information
-pub trait VelocityFunction<const DIMS: usize>: Fn(&Particle<DIMS>) -> [f64; DIMS] {}
+pub trait VelocityFunction<const DIMS: usize>: Fn(/*current*/ &Particle<DIMS>, /*best*/ &Particle<DIMS>) -> [f64; DIMS] {}
 
 pub trait ObjectiveFunction<const DIMS: usize>: Fn(&[f64; DIMS]) -> f64 {}
 
@@ -44,7 +44,7 @@ where
         }
     }
 
-    fn optimize<F>(&mut self, generations: usize, obj_func: F) -> &Particle<DIMS>
+    fn optimize<F>(&mut self, generations: usize, obj_func: F) -> Particle<DIMS>
     where
         F: ObjectiveFunction<DIMS>,
     {
@@ -57,15 +57,26 @@ where
         });
 
         // getting global best
-        let g_best = self
+        let mut g_best = self
             .particles
             .iter()
             .min_by(|p1, p2| Particle::compare(p1, p2))
-            .unwrap();
+            .unwrap()
+            .clone(); // sadly the clone is necessary
 
         for _ in 0..generations {
-            for p in &self.particles {}
+            for p in &mut self.particles {
+                p.apply_velocity(&g_best, &self.velocity);
+            }
+
+            g_best = self
+                .particles
+                .iter()
+                .min_by(|p1, p2| Particle::compare(p1, p2))
+                .unwrap()
+                .clone(); // sadly the clone is necessary
         }
-        todo!()
+
+        g_best
     }
 }
