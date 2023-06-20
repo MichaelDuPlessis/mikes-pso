@@ -1,6 +1,5 @@
-use std::cmp::Ordering;
-
 use rand::Rng;
+use std::cmp::Ordering;
 
 // represents a particle
 pub struct Particle<const DIMS: usize> {
@@ -27,7 +26,7 @@ impl<const DIMS: usize> Particle<DIMS> {
 
     pub fn apply_function<F>(&mut self, func: &F) -> f64
     where
-        F: Fn(&[f64]) -> f64,
+        F: Fn(&[f64; DIMS]) -> f64,
     {
         let res = func(&self.dimensions);
         self.best = self.best.min(res);

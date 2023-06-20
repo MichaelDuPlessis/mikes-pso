@@ -1,48 +1,37 @@
+mod params;
 mod particle;
 
+use params::Params;
 use particle::Particle;
 use rand::Rng;
 use std::error::Error;
 
-struct PSO<const DIMS: usize> {
+struct PSO<V, const DIMS: usize>
+where
+    V: Fn(&Particle<DIMS>, &rand::rngs::ThreadRng) -> [f64; DIMS],
+{
     particles: Vec<Particle<DIMS>>,
     n_particles: usize,
     bounds: [(f64, f64); DIMS],
-    w: f64,
-    c1: f64,
-    c2: f64,
     rng: rand::rngs::ThreadRng,
+    velocity: V,
 }
 
-impl<const DIMS: usize> PSO<DIMS> {
+impl<V, const DIMS: usize> PSO<V, DIMS>
+where
+    V: Fn(&Particle<DIMS>, &rand::rngs::ThreadRng) -> [f64; DIMS],
+{
     fn new(
         n_particles: usize,
         bounds: [(f64, f64); DIMS],
-        w: f64,
-        c1: f64,
-        c2: f64,
+        velocity: V,
     ) -> Result<Self, Box<dyn Error>> {
-        if w > 1.0 || w < 0.0 {
-            return Err(Box::from(
-                "The inertia weight constant must be between 0 and 1.",
-            ));
-        }
-
-        if bounds.iter().any(|(l, u)| l > u) {
-            return Err(Box::from(
-                "The lower bound must be smaller then upper bound.",
-            ));
-        }
-
-        let mut rng = rand::thread_rng();
         Ok(Self {
             particles: Vec::with_capacity(n_particles),
             n_particles,
             bounds,
-            w,
-            c1,
-            c2,
             rng: rand::thread_rng(),
+            velocity,
         })
     }
 
@@ -54,16 +43,16 @@ impl<const DIMS: usize> PSO<DIMS> {
         }
     }
 
-    fn optimize<F>(&mut self, generations: usize, func: &F) -> &Particle<DIMS>
+    fn optimize<F>(&mut self, generations: usize, target_func: F) -> &Particle<DIMS>
     where
-        F: Fn(&[f64]) -> f64,
+        F: Fn(&[f64; DIMS]) -> f64,
     {
         // creating random particles
         self.generate_random_particles();
 
         // adding best position of every particle
         self.particles.iter_mut().for_each(|p| {
-            p.apply_function(func);
+            p.apply_function(&target_func);
         });
 
         // getting global best
