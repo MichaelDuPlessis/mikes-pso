@@ -1,36 +1,53 @@
+use crate::pso::{ObjectiveFunction, VelocityFunction};
 use rand::Rng;
 use std::cmp::Ordering;
 
 // represents a particle
 pub struct Particle<const DIMS: usize> {
-    dimensions: [f64; DIMS],
+    coordinates: [f64; DIMS],
     best: f64,
-    velocity: f64,
+    velocity: [f64; DIMS],
 }
 
 impl<const DIMS: usize> Particle<DIMS> {
+    // creating a new particle withing the bounds of the objective
     pub fn new(bounds: &[(f64, f64)], rng: &mut rand::rngs::ThreadRng) -> Self {
-        let mut dimensions = [0.0; DIMS];
+        let mut coordinates = [0.0; DIMS];
 
-        for i in 0..dimensions.len() {
+        for i in 0..coordinates.len() {
             let (lower, upper) = bounds[i];
-            dimensions[i] = rng.gen_range(lower..=upper);
+            coordinates[i] = rng.gen_range(lower..=upper);
         }
 
         Self {
-            dimensions,
+            coordinates,
             best: f64::MAX,
-            velocity: 0.0,
+            velocity: [0.0; DIMS],
         }
     }
 
     pub fn apply_function<F>(&mut self, func: &F) -> f64
     where
-        F: Fn(&[f64; DIMS]) -> f64,
+        F: ObjectiveFunction<DIMS>,
     {
-        let res = func(&self.dimensions);
+        let res = func(&self.coordinates);
         self.best = self.best.min(res);
         res
+    }
+
+    pub fn apply_velocity<V>(&mut self, func: &V)
+    where
+        V: VelocityFunction<DIMS>,
+    {
+        let vel = func(self);
+
+        for i in 0..self.coordinates.len() {
+            // gives performance gain by removing bounds check
+            unsafe {
+                *self.coordinates.get_unchecked_mut(i) += vel.get_unchecked(i);
+            }
+        }
+        self.velocity = vel;
     }
 
     pub fn compare(p1: &Self, p2: &Self) -> Ordering {

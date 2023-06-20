@@ -2,14 +2,14 @@ use crate::particle::Particle;
 use std::error::Error;
 
 // using it as a trait bound alias
-trait VelocityFunction<const DIMS: usize>:
-    Fn(&Particle<DIMS>, &rand::rngs::ThreadRng) -> [f64; DIMS]
-{
-}
+// particle should contain all the needed information
+pub trait VelocityFunction<const DIMS: usize>: Fn(&Particle<DIMS>) -> [f64; DIMS] {}
+
+pub trait ObjectiveFunction<const DIMS: usize>: Fn(&[f64; DIMS]) -> f64 {}
 
 struct PSO<V, const DIMS: usize>
 where
-    V: Fn(&Particle<DIMS>, &rand::rngs::ThreadRng) -> [f64; DIMS],
+    V: VelocityFunction<DIMS>,
 {
     particles: Vec<Particle<DIMS>>,
     n_particles: usize,
@@ -20,7 +20,7 @@ where
 
 impl<V, const DIMS: usize> PSO<V, DIMS>
 where
-    V: Fn(&Particle<DIMS>, &rand::rngs::ThreadRng) -> [f64; DIMS],
+    V: VelocityFunction<DIMS>,
 {
     fn new(
         n_particles: usize,
@@ -44,16 +44,16 @@ where
         }
     }
 
-    fn optimize<F>(&mut self, generations: usize, target_func: F) -> &Particle<DIMS>
+    fn optimize<F>(&mut self, generations: usize, obj_func: F) -> &Particle<DIMS>
     where
-        F: Fn(&[f64; DIMS]) -> f64,
+        F: ObjectiveFunction<DIMS>,
     {
         // creating random particles
         self.generate_random_particles();
 
         // adding best position of every particle
         self.particles.iter_mut().for_each(|p| {
-            p.apply_function(&target_func);
+            p.apply_function(&obj_func);
         });
 
         // getting global best
