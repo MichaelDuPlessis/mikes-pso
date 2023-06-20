@@ -1,12 +1,11 @@
-use crate::pso::{ObjectiveFunction, VelocityFunction};
+use crate::{ObjectiveFunction, VelocityFunction};
 use rand::Rng;
-use std::cmp::Ordering;
 
 // represents a particle
 #[derive(Clone)]
 pub struct Particle<const DIMS: usize> {
     coordinates: [f64; DIMS],
-    best: f64,
+    best: [f64; DIMS],
     velocity: [f64; DIMS],
 }
 
@@ -22,7 +21,7 @@ impl<const DIMS: usize> Particle<DIMS> {
 
         Self {
             coordinates,
-            best: f64::MAX,
+            best: [f64::MAX; DIMS],
             velocity: [0.0; DIMS],
         }
     }
@@ -32,7 +31,11 @@ impl<const DIMS: usize> Particle<DIMS> {
         F: ObjectiveFunction<DIMS>,
     {
         let res = func(&self.coordinates);
-        self.best = self.best.min(res);
+        self.best = if res < func(&self.best) {
+            self.coordinates
+        } else {
+            self.best
+        };
         res
     }
 
@@ -51,7 +54,15 @@ impl<const DIMS: usize> Particle<DIMS> {
         self.velocity = vel;
     }
 
-    pub fn compare(p1: &Self, p2: &Self) -> Ordering {
-        p1.best.total_cmp(&p2.best)
+    pub fn velocity(&self) -> [f64; DIMS] {
+        self.velocity
+    }
+
+    pub fn best(&self) -> [f64; DIMS] {
+        self.best
+    }
+
+    pub fn coordinates(&self) -> [f64; DIMS] {
+        self.coordinates
     }
 }

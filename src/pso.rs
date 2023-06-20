@@ -1,13 +1,7 @@
-use crate::particle::Particle;
+use crate::{particle::Particle, ObjectiveFunction, VelocityFunction};
 use std::error::Error;
 
-// using it as a trait bound alias
-// particle should contain all the needed information
-pub trait VelocityFunction<const DIMS: usize>: Fn(/*current*/ &Particle<DIMS>, /*best*/ &Particle<DIMS>) -> [f64; DIMS] {}
-
-pub trait ObjectiveFunction<const DIMS: usize>: Fn(&[f64; DIMS]) -> f64 {}
-
-struct PSO<V, const DIMS: usize>
+pub struct PSO<V, const DIMS: usize>
 where
     V: VelocityFunction<DIMS>,
 {
@@ -22,7 +16,7 @@ impl<V, const DIMS: usize> PSO<V, DIMS>
 where
     V: VelocityFunction<DIMS>,
 {
-    fn new(
+    pub fn new(
         n_particles: usize,
         bounds: [(f64, f64); DIMS],
         velocity: V,
@@ -60,7 +54,7 @@ where
         let mut g_best = self
             .particles
             .iter()
-            .min_by(|p1, p2| Particle::compare(p1, p2))
+            .min_by(|p1, p2| obj_func(&p1.coordinates()).total_cmp(&obj_func(&p2.coordinates())))
             .unwrap()
             .clone(); // sadly the clone is necessary
 
@@ -72,9 +66,11 @@ where
             g_best = self
                 .particles
                 .iter()
-                .min_by(|p1, p2| Particle::compare(p1, p2))
+                .min_by(|p1, p2| {
+                    obj_func(&p1.coordinates()).total_cmp(&obj_func(&p2.coordinates()))
+                })
                 .unwrap()
-                .clone(); // sadly the clone is necessary
+                .clone(); // sadly the clon // sadly the clone is necessary
         }
 
         g_best
