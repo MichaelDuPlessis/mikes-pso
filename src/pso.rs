@@ -1,5 +1,6 @@
+use std::fmt::Debug;
+
 use crate::{particle::Particle, ObjectiveFunction, VelocityFunction};
-use std::error::Error;
 
 pub struct PSO<V, const DIMS: usize>
 where
@@ -8,42 +9,45 @@ where
     particles: Vec<Particle<DIMS>>,
     n_particles: usize,
     bounds: [(f64, f64); DIMS],
-    rng: rand::rngs::ThreadRng,
     velocity: V,
+}
+
+impl<V, const DIMS: usize> Debug for PSO<V, DIMS>
+where
+    V: VelocityFunction<DIMS>,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("PSO")
+            .field("particles", &self.particles)
+            .field("n_particles", &self.n_particles)
+            .field("bounds", &self.bounds)
+            .finish()
+    }
 }
 
 impl<V, const DIMS: usize> PSO<V, DIMS>
 where
     V: VelocityFunction<DIMS>,
 {
-    pub fn new(
-        n_particles: usize,
-        bounds: [(f64, f64); DIMS],
-        velocity: V,
-    ) -> Result<Self, Box<dyn Error>> {
-        Ok(Self {
+    pub fn new(n_particles: usize, bounds: [(f64, f64); DIMS], velocity: V) -> Self {
+        Self {
             particles: Vec::with_capacity(n_particles),
             n_particles,
             bounds,
-            rng: rand::thread_rng(),
             velocity,
-        })
-    }
-
-    // initializes all the particles with random values
-    fn generate_random_particles(&mut self) {
-        for _ in 0..self.n_particles {
-            self.particles
-                .push(Particle::new(&self.bounds, &mut self.rng))
         }
     }
 
-    fn optimize<F>(&mut self, generations: usize, obj_func: F) -> Particle<DIMS>
+    pub fn optimize<F>(&mut self, generations: usize, obj_func: F) -> Particle<DIMS>
     where
         F: ObjectiveFunction<DIMS>,
     {
         // creating random particles
-        self.generate_random_particles();
+        for _ in 0..self.n_particles {
+            self.particles.push(Particle::new(&self.bounds))
+        }
+
+        println!("{:#?}", self.particles);
 
         // adding best position of every particle
         self.particles.iter_mut().for_each(|p| {

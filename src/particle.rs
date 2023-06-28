@@ -1,5 +1,6 @@
 use crate::{ObjectiveFunction, VelocityFunction};
 use rand::Rng;
+use std::fmt::Debug;
 
 // represents a particle
 #[derive(Clone)]
@@ -9,20 +10,36 @@ pub struct Particle<const DIMS: usize> {
     velocity: [f64; DIMS],
 }
 
+// for some reason deriving debug did not work?
+impl<const DIMS: usize> Debug for Particle<DIMS> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Particle")
+            .field("coordinates", &self.coordinates)
+            .field("best", &self.best)
+            .field("velocity", &self.velocity)
+            .finish()
+    }
+}
+
 impl<const DIMS: usize> Particle<DIMS> {
     // creating a new particle withing the bounds of the objective
-    pub fn new(bounds: &[(f64, f64)], rng: &mut rand::rngs::ThreadRng) -> Self {
+    pub fn new(bounds: &[(f64, f64)]) -> Self {
         let mut coordinates = [0.0; DIMS];
+        let mut velocity = [0.0; DIMS];
 
+        let mut rng = rand::thread_rng();
         for i in 0..coordinates.len() {
             let (lower, upper) = bounds[i];
-            coordinates[i] = rng.gen_range(lower..=upper);
+            unsafe {
+                *coordinates.get_unchecked_mut(i) = rng.gen_range(lower..=upper);
+                *velocity.get_unchecked_mut(i) = rng.gen::<f64>() * 0.1;
+            }
         }
 
         Self {
             coordinates,
-            best: [f64::MAX; DIMS],
-            velocity: [0.0; DIMS],
+            best: coordinates,
+            velocity,
         }
     }
 
