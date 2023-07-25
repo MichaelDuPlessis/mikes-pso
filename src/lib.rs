@@ -17,7 +17,7 @@ impl<F, const DIMS: usize> ObjectiveFunction<DIMS> for F where F: Fn(&[f64; DIMS
 pub fn velocity(current: &Particle<2>, best: &Particle<2>) -> [f64; 2] {
     let c1 = 1.0;
     let c2 = 1.0;
-    let w = 0.8;
+    let w = 0.5;
     let (r1, r2): (f64, f64) = rand::random();
 
     let x = w * current.velocity()[0]

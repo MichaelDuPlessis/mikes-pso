@@ -47,8 +47,6 @@ where
             self.particles.push(Particle::new(&self.bounds))
         }
 
-        println!("{:#?}", self.particles);
-
         // adding best position of every particle
         self.particles.iter_mut().for_each(|p| {
             p.apply_function(&obj_func);
@@ -74,7 +72,7 @@ where
                     obj_func(&p1.coordinates()).total_cmp(&obj_func(&p2.coordinates()))
                 })
                 .unwrap()
-                .clone(); // sadly the clon // sadly the clone is necessary
+                .clone(); // sadly the clone is necessary
         }
 
         g_best
