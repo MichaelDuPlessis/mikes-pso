@@ -1,6 +1,5 @@
-use std::fmt::Debug;
-
 use crate::{particle::Particle, ObjectiveFunction, VelocityFunction};
+use std::fmt::Debug;
 
 pub struct PSO<V, const DIMS: usize>
 where
