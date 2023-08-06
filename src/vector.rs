@@ -13,6 +13,14 @@ impl<const DIMS: usize> Vector<DIMS> {
     }
 }
 
+impl<const DIMS: usize> ops::Index<usize> for Vector<DIMS> {
+    type Output = f64;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
 impl<const DIMS: usize> ops::Add<Vector<DIMS>> for Vector<DIMS> {
     type Output = Self;
 
