@@ -43,7 +43,7 @@ where
     {
         // creating random particles
         for _ in 0..self.n_particles {
-            self.particles.push(Particle::new(&self.bounds))
+            self.particles.push(Particle::new_random(&self.bounds))
         }
 
         // adding best position of every particle

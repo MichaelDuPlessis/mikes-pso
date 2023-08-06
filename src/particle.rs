@@ -1,13 +1,13 @@
-use crate::{ObjectiveFunction, VelocityFunction};
+use crate::{vector::Vector, ObjectiveFunction, VelocityFunction};
 use rand::Rng;
 use std::fmt::Debug;
 
 // represents a particle
 #[derive(Clone)]
 pub struct Particle<const DIMS: usize> {
-    coordinates: [f64; DIMS],
-    best: [f64; DIMS],
-    velocity: [f64; DIMS],
+    coordinates: Vector<DIMS>,
+    best: Vector<DIMS>,
+    velocity: Vector<DIMS>,
 }
 
 // for some reason deriving debug did not work?
@@ -23,7 +23,7 @@ impl<const DIMS: usize> Debug for Particle<DIMS> {
 
 impl<const DIMS: usize> Particle<DIMS> {
     // creating a new particle withing the bounds of the objective
-    pub fn new(bounds: &[(f64, f64)]) -> Self {
+    pub fn new_random(bounds: &[(f64, f64)]) -> Self {
         let mut coordinates = [0.0; DIMS];
         let mut velocity = [0.0; DIMS];
 
@@ -36,10 +36,11 @@ impl<const DIMS: usize> Particle<DIMS> {
             }
         }
 
+        let coordinates = Vector::new(coordinates);
         Self {
             coordinates,
-            best: coordinates,
-            velocity,
+            best: coordinates.clone(),
+            velocity: Vector::new(velocity),
         }
     }
 
@@ -62,24 +63,22 @@ impl<const DIMS: usize> Particle<DIMS> {
     {
         let vel = func(self, best);
 
-        for i in 0..self.coordinates.len() {
+        for i in 0..self.coordinates.size() {
             // gives performance gain by removing bounds check
-            unsafe {
-                *self.coordinates.get_unchecked_mut(i) += vel.get_unchecked(i);
-            }
+            self.coordinates += vel;
         }
         self.velocity = vel;
     }
 
-    pub fn velocity(&self) -> [f64; DIMS] {
+    pub fn velocity(&self) -> Vector<DIMS> {
         self.velocity
     }
 
-    pub fn best(&self) -> [f64; DIMS] {
+    pub fn best(&self) -> Vector<DIMS> {
         self.best
     }
 
-    pub fn coordinates(&self) -> [f64; DIMS] {
+    pub fn coordinates(&self) -> Vector<DIMS> {
         self.coordinates
     }
 }
