@@ -1,3 +1,4 @@
+pub mod bounds;
 pub mod particle;
 pub mod pso;
 pub mod vector;
