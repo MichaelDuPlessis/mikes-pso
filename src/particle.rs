@@ -1,4 +1,4 @@
-use crate::{vector::Vector, ObjectiveFunction, VelocityFunction};
+use crate::{bounds::Bound, vector::Vector, ObjectiveFunction, VelocityFunction};
 use rand::Rng;
 use std::fmt::Debug;
 
@@ -23,13 +23,13 @@ impl<const DIMS: usize> Debug for Particle<DIMS> {
 
 impl<const DIMS: usize> Particle<DIMS> {
     // creating a new particle withing the bounds of the objective
-    pub fn new_random(bounds: &[(f64, f64)]) -> Self {
+    pub fn new_random(bounds: &[Bound]) -> Self {
         let mut coordinates = [0.0; DIMS];
         let mut velocity = [0.0; DIMS];
 
         let mut rng = rand::thread_rng();
         for i in 0..coordinates.len() {
-            let (lower, upper) = bounds[i];
+            let Bound((lower, upper)) = bounds[i];
             unsafe {
                 *coordinates.get_unchecked_mut(i) = rng.gen_range(lower..=upper);
                 *velocity.get_unchecked_mut(i) = rng.gen::<f64>() * 0.1;

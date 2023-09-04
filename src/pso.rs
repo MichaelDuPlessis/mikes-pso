@@ -1,10 +1,9 @@
-use crate::{particle::Particle, ObjectiveFunction, VelocityFunction};
-use std::fmt::Debug;
+use crate::{bounds::Bound, particle::Particle, ObjectiveFunction, VelocityFunction};
 
 pub fn pso<V, F, const DIMS: usize>(
     pop_size: usize,
     generations: usize,
-    bounds: [(f64, f64); DIMS],
+    bounds: &[Bound],
     velocity: V,
     objective: F,
 ) -> Particle<DIMS>
@@ -12,6 +11,7 @@ where
     V: VelocityFunction<DIMS>,
     F: ObjectiveFunction<DIMS>,
 {
+    assert_eq!(bounds.len(), DIMS);
     // creating random particles
     let mut particles = create_particles(pop_size, bounds);
 
@@ -42,10 +42,7 @@ where
     g_best
 }
 
-fn create_particles<const DIMS: usize>(
-    pop_size: usize,
-    bounds: [(f64, f64); DIMS],
-) -> Vec<Particle<DIMS>> {
+fn create_particles<const DIMS: usize>(pop_size: usize, bounds: &[Bound]) -> Vec<Particle<DIMS>> {
     // creating random particles
     (0..pop_size)
         .map(|_| Particle::new_random(&bounds))
