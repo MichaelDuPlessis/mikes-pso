@@ -1,4 +1,7 @@
-use std::ops;
+use std::{
+    ops,
+    slice::{Iter, IterMut},
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector<const DIMS: usize>([f64; DIMS]);
@@ -11,6 +14,14 @@ impl<const DIMS: usize> Vector<DIMS> {
     pub fn size(&self) -> usize {
         DIMS
     }
+
+    pub fn iter(&self) -> Iter<'_, f64> {
+        self.0.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<'_, f64> {
+        self.0.iter_mut()
+    }
 }
 
 impl<const DIMS: usize> ops::Index<usize> for Vector<DIMS> {
@@ -21,6 +32,7 @@ impl<const DIMS: usize> ops::Index<usize> for Vector<DIMS> {
     }
 }
 
+// implementing math operators
 impl<const DIMS: usize> ops::Add<Vector<DIMS>> for Vector<DIMS> {
     type Output = Self;
 
