@@ -13,6 +13,7 @@ impl<F, const DIMS: usize> VelocityFunction<DIMS> for F where
 {
 }
 
+// using it as a trait bound alias
 pub trait ObjectiveFunction<const DIMS: usize>: Fn(&Vector<DIMS>) -> f64 {}
 impl<F, const DIMS: usize> ObjectiveFunction<DIMS> for F where F: Fn(&Vector<DIMS>) -> f64 {}
 

@@ -1,8 +1,6 @@
-use std::{
-    ops,
-    slice::{Iter, IterMut},
-};
+use std::ops::{self, Deref, DerefMut};
 
+// this is just a convient wrapepr around f64 dims
 #[derive(Debug, Clone, Copy)]
 pub struct Vector<const DIMS: usize>([f64; DIMS]);
 
@@ -14,16 +12,23 @@ impl<const DIMS: usize> Vector<DIMS> {
     pub fn size(&self) -> usize {
         DIMS
     }
+}
 
-    pub fn iter(&self) -> Iter<'_, f64> {
-        self.0.iter()
-    }
+impl<const DIMS: usize> Deref for Vector<DIMS> {
+    type Target = [f64];
 
-    pub fn iter_mut(&mut self) -> IterMut<'_, f64> {
-        self.0.iter_mut()
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 
+impl<const DIMS: usize> DerefMut for Vector<DIMS> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+// implementing index
 impl<const DIMS: usize> ops::Index<usize> for Vector<DIMS> {
     type Output = f64;
 
