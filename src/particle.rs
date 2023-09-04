@@ -63,10 +63,7 @@ impl<const DIMS: usize> Particle<DIMS> {
     {
         let vel = func(self, best);
 
-        for i in 0..self.coordinates.size() {
-            // gives performance gain by removing bounds check
-            self.coordinates += vel;
-        }
+        self.coordinates += vel;
         self.velocity = vel;
     }
 
