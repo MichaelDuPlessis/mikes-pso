@@ -16,7 +16,7 @@ impl<F, const DIMS: usize> VelocityFunction<DIMS> for F where
 pub trait ObjectiveFunction<const DIMS: usize>: Fn(&Vector<DIMS>) -> f64 {}
 impl<F, const DIMS: usize> ObjectiveFunction<DIMS> for F where F: Fn(&Vector<DIMS>) -> f64 {}
 
-pub fn velocity<const DIMS: usize>(
+pub fn canonical_velocity<const DIMS: usize>(
     current: &Particle<DIMS>,
     best: &Particle<DIMS>,
 ) -> Vector<DIMS> {
