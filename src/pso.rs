@@ -1,12 +1,43 @@
-use crate::{bounds::Bound, particle::Particle, ObjectiveFunction, VelocityFunction};
+use crate::{
+    bounds::Bound, particle::Particle, vector::Vector, ObjectiveFunction, VelocityFunction,
+};
 
+// Runs the PSO algorithm
+// The velocity function as well as the objective function should be specified.
+//
+// A vector containing the best coordinates of the last generation is returned.
+// # Example
+//
+// ```
+// // the canonical velocity equation
+// let velocity = |current, best| {
+//     let c1 = 1.0;
+//     let c2 = 1.0;
+//     let w = 0.5;
+//
+//     // from the rand crate
+//     let (r1, r2): (f64, f64) = rand::random();
+//     let vel = w * current.velocity()
+//        + c1 * r1 * (best.coordinates() - current.coordinates())
+//        + c2 * r2 * (current.best() - current.coordinates());
+//
+//     vel
+// }
+//
+// let objective = |particle| {
+//
+// }
+//
+// let coords = pso(100, 50, &[Bound::from(-10.0, 10.0); 2], velocity, )
+// println!("{:?}", coords);
+// ```
 pub fn pso<V, F, const DIMS: usize>(
     pop_size: usize,
     generations: usize,
     bounds: &[Bound],
     velocity: V,
     objective: F,
-) -> Particle<DIMS>
+) -> Vector<DIMS>
 where
     V: VelocityFunction<DIMS>,
     F: ObjectiveFunction<DIMS>,
@@ -39,7 +70,7 @@ where
             .clone(); // sadly the clone is necessary
     }
 
-    g_best
+    g_best.coordinates()
 }
 
 fn create_particles<const DIMS: usize>(pop_size: usize, bounds: &[Bound]) -> Vec<Particle<DIMS>> {

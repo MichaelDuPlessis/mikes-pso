@@ -2,13 +2,16 @@ use std::ops::{self, Deref, DerefMut};
 
 // this is just a convient wrapepr around f64 dims
 #[derive(Debug, Clone, Copy)]
+/// This is a mathematical vector of N dimensionality.
 pub struct Vector<const DIMS: usize>([f64; DIMS]);
 
 impl<const DIMS: usize> Vector<DIMS> {
+    /// Creates a new Vector from a list of f64's.
     pub fn new(coords: [f64; DIMS]) -> Self {
         Self(coords)
     }
 
+    /// Gets the size of the Vector.
     pub fn size(&self) -> usize {
         DIMS
     }

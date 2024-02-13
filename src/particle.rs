@@ -37,6 +37,7 @@ impl<const DIMS: usize> Particle<DIMS> {
         }
 
         let coordinates = Vector::new(coordinates);
+        println!("{coordinates:?}");
         Self {
             coordinates,
             best: coordinates.clone(),
