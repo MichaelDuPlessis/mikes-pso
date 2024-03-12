@@ -2,35 +2,42 @@ mod algorithm;
 mod allocator;
 mod particle;
 
+use algorithm::Algorithm;
 use allocator::allocator::{Allocator, Size};
 use particle::particle::Particle;
 use std::marker::PhantomData;
 
 /// This is a generic PSO struct
 /// It is the main export of this library and is what is used to run the PSO
-struct PSO<P, I, J, A>
+pub struct PSO<P, A, F, O, T>
 where
-    A: Allocator<P, I, J>,
-    P: Particle<J>,
+    A: Allocator<P>,
+    P: Particle,
+    F: Algorithm<P>,
+    O: Fn(P) -> T,
 {
     allocator: A,
+    algorithm: F,
+    objective_func: O,
+    iterations: usize,
     _particle: PhantomData<P>,
-    _allocator_index: PhantomData<I>,
-    _particle_index: PhantomData<J>,
 }
 
-impl<P, I, J, A> PSO<P, I, J, A>
+impl<F, P, A, O, T> PSO<P, A, F, O, T>
 where
-    A: Allocator<P, I, J>,
-    P: Particle<J>,
+    A: Allocator<P>,
+    P: Particle,
+    F: Algorithm<P>,
+    O: Fn(P) -> T,
 {
     /// Creates a new PSO from an allocator
-    pub fn new(allocator: A) -> Self {
+    pub fn new(allocator: A, algorithm: F, iterations: usize, objective_func: O) -> Self {
         Self {
             allocator,
+            algorithm,
+            objective_func,
+            iterations,
             _particle: PhantomData,
-            _allocator_index: PhantomData,
-            _particle_index: PhantomData,
         }
     }
 
@@ -45,7 +52,11 @@ where
     }
 
     /// Tries to find the minimum of a function, returns the particle closest to the minimum
-    pub fn find_min(&self) -> P {
+    pub fn find_min(&mut self) -> P {
+        for _ in 0..self.iterations {
+            self.algorithm.search(self.allocator.iter_mut());
+        }
+
         todo!()
     }
 

@@ -42,9 +42,10 @@ impl From<usize> for DynSize {
 
 /// This trait is implemented by types that allocate particles
 /// The type implementing the trait will most likely need to be able to store the particles it creats so that they can be indexed later
-pub trait Allocator<P, I, J>: ops::Index<I> + IntoIterator<Item = P>
+// TODO: In future consider making trait require implementors to implement IntoIterator
+pub trait Allocator<P>
 where
-    P: Particle<J>,
+    P: Particle,
 {
     /// This method allocates the particles
     /// amount is the number of particles to be allocated
@@ -53,6 +54,11 @@ where
     /// This method returns the dimensions of each particle
     fn amount(&self) -> usize;
 
-    /// This mehtod returns the number of particles
+    /// This method returns the number of particles
     fn dims(&self) -> usize;
+
+    /// Returns a mutable iterator over the particles
+    fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut P>
+    where
+        P: 'a;
 }

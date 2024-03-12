@@ -5,7 +5,7 @@ use std::ops::{self, AddAssign};
 /// This is a particle in PSO
 /// In essence it is just a list of numbers that make up the "coordinates" of the particle
 /// It is a marker trait
-pub trait Particle<I>: ops::Add + ops::AddAssign + ops::Index<I> + Sized {
+pub trait Particle: ops::Add + ops::AddAssign + Sized {
     /// Creates a new particle with random values for the coordinates
     fn new(dims: impl Size) -> Self;
 }
@@ -49,18 +49,7 @@ where
     }
 }
 
-impl<T> ops::Index<usize> for VecParticle<T>
-where
-    T: ops::AddAssign,
-{
-    type Output = T;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        &self.0[index]
-    }
-}
-
-impl Particle<usize> for VecParticle<f32> {
+impl Particle for VecParticle<f32> {
     fn new(dims: impl Size) -> Self {
         let mut rng = rand::thread_rng();
         let between = Uniform::new_inclusive(f32::MIN, f32::MAX);
