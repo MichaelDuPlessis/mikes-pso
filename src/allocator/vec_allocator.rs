@@ -1,20 +1,38 @@
-use super::allocator::{Allocator, Size};
-use crate::particle::particle::Particle;
+use super::{Allocator, Size};
+use crate::particle::{coord::CoordinateElement, Particle};
+use std::{marker::PhantomData, slice::IterMut};
 
 // TODO: Give it a better name
 /// This is the mos basic form of allocator
-pub struct VecAllocator<P>
+pub struct VecAllocator<P, T>
 where
-    P: Particle,
+    P: Particle<T>,
+    T: CoordinateElement,
 {
     particles: Vec<P>,
     amount: usize,
     dims: usize,
+    _element: PhantomData<T>,
 }
 
-impl<P> Allocator<P> for VecAllocator<P>
+impl<'a, P, T> IntoIterator for &'a mut VecAllocator<P, T>
 where
-    P: Particle,
+    P: Particle<T>,
+    T: CoordinateElement,
+{
+    type Item = &'a mut P;
+
+    type IntoIter = IterMut<'a, P>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        todo!()
+    }
+}
+
+impl<P, T> Allocator<P, T> for VecAllocator<P, T>
+where
+    P: Particle<T>,
+    T: CoordinateElement,
 {
     fn allocate(dims: impl Size, amount: impl Size) -> Self {
         let amount = amount.size();
@@ -23,6 +41,7 @@ where
             particles,
             amount,
             dims: dims.size(),
+            _element: PhantomData,
         }
     }
 
@@ -32,12 +51,5 @@ where
 
     fn dims(&self) -> usize {
         self.dims
-    }
-
-    fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = &'a mut P>
-    where
-        P: 'a,
-    {
-        self.particles.iter_mut()
     }
 }

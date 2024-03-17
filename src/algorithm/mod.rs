@@ -1,26 +1,42 @@
-use crate::particle::particle::Particle;
+use crate::{
+    allocator::Allocator,
+    particle::{coord::CoordinateElement, Particle},
+};
 
 /// The algorithm to use for PSO
-pub trait Algorithm<P>
+pub trait Algorithm<P, C, O, T>
 where
-    P: Particle,
+    P: Particle<C>,
+    C: CoordinateElement,
+    O: Fn(&P) -> T,
+    T: PartialOrd,
 {
-    fn search<'a>(&'a self, particles: impl IntoIterator<Item = &'a mut P>)
+    fn search<'a, A>(&'a self, allocator: &mut A, objective_func: &O)
     where
+        A: Allocator<P, C>,
+        for<'b> &'b mut A: IntoIterator<Item = &'b mut P>,
         P: 'a;
 }
 
 /// The canconical implementaion of the PSO algorithm
 pub struct Canonical;
 
-impl<P> Algorithm<P> for Canonical
+impl<P, C, O, T> Algorithm<P, C, O, T> for Canonical
 where
-    P: Particle,
+    P: Particle<C>,
+    C: CoordinateElement,
+    O: Fn(&P) -> T,
+    T: PartialOrd,
 {
-    fn search<'a>(&'a self, particles: impl IntoIterator<Item = &'a mut P>)
+    fn search<'a, A>(&'a self, allocator: &mut A, objective_func: &O)
     where
+        A: Allocator<P, C>,
+        for<'b> &'b mut A: IntoIterator<Item = &'b mut P>,
         P: 'a,
     {
-        let particles = particles.into_iter();
+        // finding best particle
+        // TODO: Consider changing the ordering that was returned if None is returned
+        // TODO: Is panicking if a min is not found the best option?
+        let best = allocator.into_iter();
     }
 }

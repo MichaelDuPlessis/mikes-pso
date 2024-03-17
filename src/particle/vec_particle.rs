@@ -1,14 +1,8 @@
-use crate::allocator::allocator::Size;
+use crate::allocator::Size;
 use rand::distributions::{Distribution, Uniform};
 use std::ops::{self, AddAssign};
 
-/// This is a particle in PSO
-/// In essence it is just a list of numbers that make up the "coordinates" of the particle
-/// It is a marker trait
-pub trait Particle: ops::Add + ops::AddAssign + Sized {
-    /// Creates a new particle with random values for the coordinates
-    fn new(dims: impl Size) -> Self;
-}
+use super::Particle;
 
 /// This is a particle in PSO
 pub struct VecParticle<T>(Vec<T>)
@@ -49,7 +43,7 @@ where
     }
 }
 
-impl Particle for VecParticle<f32> {
+impl Particle<f32> for VecParticle<f32> {
     fn new(dims: impl Size) -> Self {
         let mut rng = rand::thread_rng();
         let between = Uniform::new_inclusive(f32::MIN, f32::MAX);
@@ -57,5 +51,21 @@ impl Particle for VecParticle<f32> {
         let particles = (0..dims.size()).map(|_| between.sample(&mut rng)).collect();
 
         Self(particles)
+    }
+
+    fn coord(&self) -> &f32 {
+        todo!()
+    }
+
+    fn coord_mut(&self) -> &mut f32 {
+        todo!()
+    }
+
+    fn vec(&self) -> &f32 {
+        todo!()
+    }
+
+    fn vec_mut(&self) -> &mut f32 {
+        todo!()
     }
 }
