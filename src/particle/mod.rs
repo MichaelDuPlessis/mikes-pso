@@ -6,6 +6,7 @@ use crate::allocator::Size;
 
 /// This is a particle in PSO
 /// In essence it is just a list of numbers that make up the "coordinates" of the particle
+// TODO: Make it so that vectors and coordinates do not need to be the same type
 pub trait Particle<T>
 where
     T: Coordinate,
@@ -20,8 +21,8 @@ where
     fn coord_mut(&self) -> &mut T;
 
     /// Returns a reference to the velocity
-    fn vec(&self) -> &T;
+    fn vel(&self) -> &T;
 
     /// Returns a mutable reference to the velocity
-    fn vec_mut(&self) -> &mut T;
+    fn vel_mut(&self) -> &mut T;
 }
