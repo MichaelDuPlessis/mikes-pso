@@ -1,14 +1,14 @@
 pub mod coord;
 pub mod vec_particle;
 
-use self::coord::CoordinateElement;
+use self::coord::Coordinate;
 use crate::allocator::Size;
 
 /// This is a particle in PSO
 /// In essence it is just a list of numbers that make up the "coordinates" of the particle
 pub trait Particle<T>
 where
-    T: CoordinateElement,
+    T: Coordinate,
 {
     /// Creates a new Particle
     fn new(dims: impl Size) -> Self;

@@ -1,6 +1,6 @@
 pub mod vec_allocator;
 
-use crate::particle::{coord::CoordinateElement, Particle};
+use crate::particle::{coord::Coordinate, Particle};
 
 /// This trait is implemented by types that can give sizes
 /// It is used for both dynamic and const sizes
@@ -47,7 +47,8 @@ impl From<usize> for DynSize {
 pub trait Allocator<P, T>
 where
     P: Particle<T>,
-    T: CoordinateElement,
+    T: Coordinate,
+    // TODO: Properly learn and understand what this means
     for<'a> &'a mut Self: IntoIterator<Item = &'a mut P>,
 {
     /// This method allocates the particles

@@ -1,5 +1,5 @@
 use super::{Allocator, Size};
-use crate::particle::{coord::CoordinateElement, Particle};
+use crate::particle::{coord::Coordinate, Particle};
 use std::{marker::PhantomData, slice::IterMut};
 
 // TODO: Give it a better name
@@ -7,7 +7,7 @@ use std::{marker::PhantomData, slice::IterMut};
 pub struct VecAllocator<P, T>
 where
     P: Particle<T>,
-    T: CoordinateElement,
+    T: Coordinate,
 {
     particles: Vec<P>,
     amount: usize,
@@ -18,7 +18,7 @@ where
 impl<'a, P, T> IntoIterator for &'a mut VecAllocator<P, T>
 where
     P: Particle<T>,
-    T: CoordinateElement,
+    T: Coordinate,
 {
     type Item = &'a mut P;
 
@@ -32,7 +32,7 @@ where
 impl<P, T> Allocator<P, T> for VecAllocator<P, T>
 where
     P: Particle<T>,
-    T: CoordinateElement,
+    T: Coordinate,
 {
     fn allocate(dims: impl Size, amount: impl Size) -> Self {
         let amount = amount.size();

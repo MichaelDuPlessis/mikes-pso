@@ -4,7 +4,7 @@ mod particle;
 
 use algorithm::Algorithm;
 use allocator::Allocator;
-use particle::{coord::CoordinateElement, Particle};
+use particle::{coord::Coordinate, Particle};
 use std::marker::PhantomData;
 
 /// This is a generic PSO struct
@@ -17,7 +17,7 @@ where
     F: Algorithm<P, K, O, T>,
     O: Fn(&P) -> T,
     T: PartialOrd,
-    K: CoordinateElement,
+    K: Coordinate,
 {
     allocator: A,
     algorithm: F,
@@ -35,7 +35,7 @@ where
     F: Algorithm<P, K, O, T>,
     O: Fn(&P) -> T,
     T: PartialOrd,
-    K: CoordinateElement,
+    K: Coordinate,
 {
     /// Creates a new PSO from an allocator
     pub fn new(allocator: A, algorithm: F, iterations: usize, objective_func: O) -> Self {

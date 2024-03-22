@@ -1,13 +1,13 @@
 use crate::{
     allocator::Allocator,
-    particle::{coord::CoordinateElement, Particle},
+    particle::{coord::Coordinate, Particle},
 };
 
 /// The algorithm to use for PSO
 pub trait Algorithm<P, C, O, T>
 where
     P: Particle<C>,
-    C: CoordinateElement,
+    C: Coordinate,
     O: Fn(&P) -> T,
     T: PartialOrd,
 {
@@ -18,13 +18,15 @@ where
         P: 'a;
 }
 
+// TODO: Try and implement this trait for function types
+
 /// The canconical implementaion of the PSO algorithm
 pub struct Canonical;
 
 impl<P, C, O, T> Algorithm<P, C, O, T> for Canonical
 where
     P: Particle<C>,
-    C: CoordinateElement,
+    C: Coordinate,
     O: Fn(&P) -> T,
     T: PartialOrd,
 {

@@ -1,48 +1,48 @@
+use super::Particle;
 use crate::allocator::Size;
 use rand::distributions::{Distribution, Uniform};
 use std::ops::{self, AddAssign};
 
-use super::Particle;
+/// This is just a 3 dimensional vecto
+struct Vec3<T> {
+    x: T,
+    y: T,
+    z: T,
+}
 
-/// This is a particle in PSO
-pub struct VecParticle<T>(Vec<T>)
+impl<T> ops::Add for Vec3<T>
 where
-    T: ops::AddAssign;
-
-impl<T> ops::Add for VecParticle<T>
-where
-    T: AddAssign,
+    T: ops::Add<Output = T>,
 {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
-        // getting values inside Particle
-        let Self(mut lhs) = self;
-        let Self(rhs) = rhs;
-
-        // adding rhs to lhs
-        for (l, r) in lhs.iter_mut().zip(rhs) {
-            *l += r;
+        Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+            z: self.z + rhs.z,
         }
-
-        Self(lhs)
     }
 }
 
-impl<T> ops::AddAssign for VecParticle<T>
+impl<T> ops::AddAssign for Vec3<T>
 where
-    T: AddAssign,
+    T: ops::AddAssign,
 {
     fn add_assign(&mut self, rhs: Self) {
-        let Self(lhs) = self;
-        let Self(rhs) = rhs;
-
-        for (l, r) in lhs.iter_mut().zip(rhs) {
-            *l += r;
-        }
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
     }
 }
 
+/// This is a particle in PSO
+pub struct VecParticle<T> {
+    coordinates: Vec3<T>,
+    velocity: Vec3<T>,
+}
+
+/*
 impl Particle<f32> for VecParticle<f32> {
     fn new(dims: impl Size) -> Self {
         let mut rng = rand::thread_rng();
@@ -69,3 +69,4 @@ impl Particle<f32> for VecParticle<f32> {
         todo!()
     }
 }
+*/
