@@ -105,10 +105,24 @@ where
             .unwrap()
             .clone();
 
+        // TODO: currently every particle is run through the objective function twice this should be fixed
         allocator.into_iter().for_each(|p| {
-            *p.coord_mut() = self.w * *p.vel()
+            // getting new velocity
+            let vel = self.w * *p.vel()
                 + self.c1 * (rand::thread_rng().gen::<R1>() * (*p.best_coord() - *p.coord()))
-                + self.c2 * (rand::thread_rng().gen::<R2>() * (*best.best_coord() - *p.coord()))
+                + self.c2 * (rand::thread_rng().gen::<R2>() * (*best.best_coord() - *p.coord()));
+
+            // updaing old velocity
+            *p.vel_mut() = vel;
+
+            // updaing coordinates
+            *p.coord_mut() = *p.coord() + vel;
+
+            if let Some(std::cmp::Ordering::Greater) =
+                objective_func(p.best_coord()).partial_cmp(&objective_func(p.coord()))
+            {
+                *p.best_coord_mut() = *p.coord();
+            }
         });
     }
 }
