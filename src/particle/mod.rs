@@ -7,7 +7,7 @@ use crate::allocator::Size;
 /// This is a particle in PSO
 /// In essence it is just a list of numbers that make up the "coordinates" of the particle
 // TODO: Make it so that vectors and coordinates do not need to be the same type
-pub trait Particle<T>
+pub trait Particle<T>: Clone
 where
     T: Coordinate,
 {
@@ -19,6 +19,12 @@ where
 
     /// Returns a mutable reference to the coordinates
     fn coord_mut(&self) -> &mut T;
+
+    /// Returns a reference to the best coordinates
+    fn best_coord(&self) -> &T;
+
+    /// Returns a mutable reference to the best coordinates
+    fn best_coord_mut(&self) -> &mut T;
 
     /// Returns a reference to the velocity
     fn vel(&self) -> &T;

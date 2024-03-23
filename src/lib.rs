@@ -15,7 +15,7 @@ where
     for<'a> &'a mut A: IntoIterator<Item = &'a mut P>,
     P: Particle<K>,
     F: Algorithm<P, K, O, T>,
-    O: Fn(&P) -> T,
+    O: Fn(&K) -> T,
     T: PartialOrd,
     K: Coordinate,
 {
@@ -33,7 +33,7 @@ where
     for<'a> &'a mut A: IntoIterator<Item = &'a mut P>,
     P: Particle<K>,
     F: Algorithm<P, K, O, T>,
-    O: Fn(&P) -> T,
+    O: Fn(&K) -> T,
     T: PartialOrd,
     K: Coordinate,
 {
